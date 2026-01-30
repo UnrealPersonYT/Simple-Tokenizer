@@ -43,7 +43,7 @@ int main(void){
         }
         size_t tno = 0;
         double t0 = now_sec();
-        st_token* out = st_tknstr(NULL, tokens, &tno, ";", buf);
+        char** out = st_tknstr(NULL, tokens, &tno, ";", buf);
         double t1 = now_sec();
         double dt = t1 - t0;
         double mbps = (double)buflen / dt / (1024.0 * 1024.0);
