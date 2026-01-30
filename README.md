@@ -30,12 +30,12 @@ A lightweight, high-performance C library for tokenizing strings. It efficiently
 #include "Simple-Tokenizer/inc.h"
 #include <stdio.h>
 
-int main(void) {
+int main(void){
     char str[] = "hello;world;tokenizer";
     size_t token_count = 0;
     
     // Tokenize the string using ';' as delimiter
-    st_token* tokens = st_tknstr(
+    char** tokens = st_tknstr(
         NULL,                    // out: allocate buffer automatically
         100,                     // max: maximum tokens to extract
         &token_count,            // tto: output token count
@@ -44,10 +44,8 @@ int main(void) {
     );
     
     // Print tokens
-    for (size_t i = 0; i < token_count; i++) {
-        printf("Token %zu: %s (length: %zu)\n", 
-               i, tokens[i].str, tokens[i].len);
-    }
+    for(size_t i = 0; i < token_count; i++)
+        printf("Token %zu: %s\n", i, tokens[i]);
     
     free(tokens);
     return 0;
@@ -59,7 +57,7 @@ int main(void) {
 </div>
 
 ```c
-st_token* st_tknstr(
+char** st_tknstr(
     char** out,                 // Optional caller-provided char* buffer (NULL = allocate internally)
     const size_t max,           // Max tokens to generate
     size_t* const tto,          // Output: total tokens generated (NULL = dont save output)
@@ -102,7 +100,6 @@ st_token* st_tknstr(
 ├── Simple-Tokenizer/
 │   ├── inc.h           # Main include file (includes entire library)
 │   ├── tokenizer.h     # Tokenization function implementation
-│   ├── defines.h       # Platform-specific macros
 │   ├── string.h        # String functions (uses stdlib by default, customizable)
 │   └── malloc.h        # Memory allocation (uses stdlib by default, customizable)
 └── benchmark.c         # Performance benchmark utility
