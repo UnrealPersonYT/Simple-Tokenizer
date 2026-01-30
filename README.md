@@ -64,8 +64,8 @@ int main(void) {
 
 ```c
 typedef struct st_token_t {
-    char*  str;  // Null-terminated pointer to token substring
-    size_t len;  // Total byte size of token
+    char*  str;  // Null-terminated pointer to input substring
+    size_t len;  // Total byte size of string
 } st_token;
 ```
 
@@ -77,11 +77,11 @@ typedef struct st_token_t {
 
 ```c
 st_token* st_tknstr(
-    st_token* out,              // Optional: pre-allocated token buffer (NULL = allocate)
-    const size_t max,           // Maximum tokens to generate
-    size_t* const tto,          // Optional: output parameter for total token count
-    const char* const rej,      // Null-terminated reject string (delimiters)
-    char* const __restrict str  // Null-terminated input string to tokenize
+    st_token* out,              // Optional caller-provided token buffer (NULL = allocate internally)
+    const size_t max,           // Max tokens to generate
+    size_t* const tto,          // Output: total tokens generated (NULL = dont save output)
+    const char* const rej,      // Pointer to null-terminated reject string (Characters that terminate a token)
+    char* const __restrict str  // Pointer to null-terminated string to tokenize
 );
 ```
 
@@ -91,11 +91,11 @@ st_token* st_tknstr(
 
 </div>
 
-- `out`: Optional caller-provided buffer for tokens. If `NULL`, the function allocates memory.
+- `out`: Optional caller-provided buffer for tokens. If `NULL`, the function allocates memory internally.
 - `max`: Maximum number of tokens to extract.
 - `tto`: Pointer to store the total number of tokens generated. Can be `NULL` if count is not needed.
-- `rej`: String containing delimiter characters (e.g., `";"`, `" \t\n"`).
-- `str`: The input string to tokenize (will be modified destructively).
+- `rej`: Pointer to null-terminated string containing delimiter characters (e.g., `";"`, `" \t\n"`).
+- `str`: Pointer to null-terminated string to tokenize (will be modified destructively).
 
 <div align="center">
 
@@ -120,7 +120,9 @@ st_token* st_tknstr(
 │   ├── inc.h           # Main include file (includes entire library)
 │   ├── tokenizer.h     # Tokenization function implementation
 │   ├── token.h         # Token structure definition
-│   └── defines.h       # Platform-specific macros
+│   ├── defines.h       # Platform-specific macros
+│   ├── string.h        # String functions (uses stdlib by default, customizable)
+│   └── malloc.h        # Memory allocation (uses stdlib by default, customizable)
 └── benchmark.c         # Performance benchmark utility
 ```
 
@@ -150,33 +152,65 @@ The benchmark generates test strings with increasing token counts and reports:
 
 ## Compilation
 
-Since this is a header-only library, simply include `Simple-Tokenizer/inc.h` in your project:
+This project uses a cross-platform Makefile that auto-detects the best available compiler.
+
+### Quick Build
+
+```bash
+make
+```
+
+This will automatically detect and use g++, clang, or cl (MSVC) in order of preference.
+
+### Build Options
+
+```bash
+make                      # Build with auto-detected compiler
+make CC=clang             # Use clang compiler
+make TARGET=myapp         # Set custom output name
+make CC=clang TARGET=app  # Combine options
+make clean                # Remove build artifacts
+make help                 # Show help message
+make info                 # Show build configuration
+```
+
+### Manual Compilation
+
+If you prefer not to use make:
+
+```bash
+# Windows
+gcc -O3 -Wall -Wextra -std=c99 -I.src -o st_bench.exe .src/benchmark.c
+
+# Linux/macOS
+gcc -O3 -Wall -Wextra -std=c99 -I.src -o st_bench .src/benchmark.c
+```
+
+<div align="center">
+
+## Custom Implementations
+
+You can customize string and memory functions for embedded systems or performance tuning:
 
 </div>
 
+1. Create custom `string.h` in `.src/Simple-Tokenizer/`:
 ```c
-#include "Simple-Tokenizer/inc.h"
+#pragma once
+// Your custom strcspn, strspn implementations
+size_t strcspn(const char* s, const char* reject) { /* ... */ }
+size_t strspn(const char* s, const char* accept) { /* ... */ }
 ```
 
-<div align="center">
-
-### Compiling with GCC/Clang
-
-</div>
-
-```bash
-gcc -O3 -Wall -o myapp myapp.c
+2. Create custom `malloc.h` in `.src/Simple-Tokenizer/`:
+```c
+#pragma once
+// Your custom allocator
+void* malloc(size_t size) { /* ... */ }
+void free(void* ptr) { /* ... */ }
 ```
 
-<div align="center">
-
-### Compiling the Benchmark
-
-</div>
-
-```bash
-gcc -O3 -Wall -o st_bench .src/benchmark.c
-```
+The library will automatically use your implementations instead of stdlib.
 
 <div align="center">
 
@@ -184,8 +218,9 @@ gcc -O3 -Wall -o st_bench .src/benchmark.c
 
 </div>
 
-- **Standard C Library** (`string.h`, `malloc.h`)
-- **ANSI C** compatible compiler
+- **C Compiler**: gcc, clang, or MSVC (auto-detected by Makefile)
+- **Make**: For automated builds (optional, manual compilation supported)
+- **Standard C Library**: `string.h`, `malloc.h` (or custom implementations)
 
 <div align="center">
 
