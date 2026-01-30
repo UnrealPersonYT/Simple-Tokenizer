@@ -14,7 +14,6 @@ static char* make_buffer(size_t tokens, size_t* out_len){
     const char* word = "aaaa";
     const size_t wlen = 4;
     const size_t sep  = 1;
-
     size_t total = tokens * (wlen + sep);
     char* buf = malloc(total + 1);
     if(!buf)
