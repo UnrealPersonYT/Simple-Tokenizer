@@ -13,7 +13,7 @@
 /// @warning   This function null-terminates tokens by modifying the input string destructively
 /// @warning   If `out` is NULL, this function allocates a token buffer.
 ///            The caller is responsible for freeing it with free().
-__noinline st_token* st_tknstr(st_token* out, const size_t max, size_t* const tto, const char* const __restrict rej, char* const __restrict str){
+st_token* st_tknstr(st_token* out, const size_t max, size_t* const tto, const char* const __restrict rej, char* const __restrict str){
     const size_t strl = strlen(str); // Size of string in bytes
     if(!strl) // Return if empty string
         return out;

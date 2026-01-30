@@ -1,7 +1,6 @@
 /// @file  Simple-Tokenizer/token.h
 /// @brief Contains the token data structure & utilities
 #pragma once
-#include "defines.h"
 #include "string.h" // You can implement your own string functions
 #include "malloc.h" // You can implement your own memory functions
 
