@@ -54,30 +54,13 @@ int main(void) {
 }
 ```
 
-<div align="center">
-
-### API Reference
-
-#### Token Structure
-
-</div>
-
-```c
-typedef struct st_token_t {
-    char*  str;  // Null-terminated pointer to input substring
-    size_t len;  // Total byte size of string
-} st_token;
-```
-
-<div align="center">
-
 #### Tokenization Function
 
 </div>
 
 ```c
 st_token* st_tknstr(
-    st_token* out,              // Optional caller-provided token buffer (NULL = allocate internally)
+    char** out,                 // Optional caller-provided char* buffer (NULL = allocate internally)
     const size_t max,           // Max tokens to generate
     size_t* const tto,          // Output: total tokens generated (NULL = dont save output)
     const char* const rej,      // Pointer to null-terminated reject string (Characters that terminate a token)
@@ -119,7 +102,6 @@ st_token* st_tknstr(
 ├── Simple-Tokenizer/
 │   ├── inc.h           # Main include file (includes entire library)
 │   ├── tokenizer.h     # Tokenization function implementation
-│   ├── token.h         # Token structure definition
 │   ├── defines.h       # Platform-specific macros
 │   ├── string.h        # String functions (uses stdlib by default, customizable)
 │   └── malloc.h        # Memory allocation (uses stdlib by default, customizable)
