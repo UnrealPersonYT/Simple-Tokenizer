@@ -31,7 +31,7 @@ static char* make_buffer(size_t tokens, size_t* out_len){
 
 int main(void){
     const size_t start_pow = 27;
-    const size_t end_pow   = 20;
+    const size_t end_pow   = 24;
     for(size_t p = start_pow; p >= end_pow; p--){
         size_t tokens = (size_t)1 << p;
         size_t buflen = 0;
