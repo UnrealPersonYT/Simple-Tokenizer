@@ -16,7 +16,10 @@ static char* make_random_buffer(size_t total_bytes, size_t* out_len){
     if(!buf)
         return NULL;
     
-    srand(12345); // Fixed seed for reproducibility
+    size_t rnd = clock();
+    rnd ^= (size_t)&rnd;
+    rnd ^= clock();
+    srand(rnd);
     size_t pos = 0;
     
     while(pos < total_bytes){
