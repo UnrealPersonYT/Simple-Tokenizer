@@ -105,20 +105,6 @@ char** st_tknstr(
 └── benchmark.c         # Performance benchmark utility
 ```
 
-<div align="center">
-
-## Custom String Functions
-
-**Important Note:** The library uses `strspn()` and `strcspn()` from the C standard library by default. However, the built-in implementations are **significantly slower** for small sized tokens ~20 bytes workloads.
-
-**Performance Comparison:**
-- Built-in `strspn`/`strcspn`: ~446 MB/s
-- Custom implementation: ~1,185 MB/s (**2.66x faster**)
-
-To use optimized string functions, implement your own `string.h` in the `.src/Simple-Tokenizer/` directory. The library will use your custom implementation instead of the standard library version.
-
-<div align="center">
-
 ## Performance
 
 The library includes a benchmark utility that measures tokenization performance across various input sizes. Run it with:
