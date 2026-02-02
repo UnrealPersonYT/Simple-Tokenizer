@@ -56,11 +56,7 @@ int main(void){
     }
     
     // Count actual tokens in randomized buffer
-    size_t actual_tokens = 0;
-    for(size_t i = 0; i < buflen; i++){
-        if(buf[i] == ';') actual_tokens++;
-    }
-    actual_tokens++; // Last token has no semicolon
+    size_t actual_tokens = st_tkncnt(buf, ";", SIZE_MAX);
     
     printf("Actual buffer length: %zu bytes\n", buflen);
     printf("Actual token count: %zu\n\n", actual_tokens);
@@ -88,12 +84,12 @@ int main(void){
     tno = 0;
     while(tno < actual_tokens && stri < buflen){
         // Skip separators
-        while(stri < buflen && buf_copy[stri] == ';') stri++;
-        if(stri >= buflen) break;
+        while(stri < buflen && buf_copy[stri] == ';')stri++;
+        if(stri >= buflen)break;
         
         // Find end of token
         size_t start = stri;
-        while(stri < buflen && buf_copy[stri] != ';') stri++;
+        while(stri < buflen && buf_copy[stri] != ';')stri++;
         
         // Null-terminate token
         buf_copy[stri] = '\0';
