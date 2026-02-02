@@ -85,7 +85,7 @@ size_t st_tkncnt(
 - `tto`: Pointer to store the total number of tokens generated. Can be `NULL` if count is not needed.
 - `rej`: Pointer to null-terminated string containing delimiter characters (e.g., `";"`, `" \t\n"`).
 - `str`: Pointer to null-terminated string to tokenize (will be modified destructively).
-- `stl`: Length of input string in bytse. Can be `0` to compute internaly; 
+- `stl`: Length of input string in bytes. Can be `0` to compute internaly; 
 
 <div align="center">
 
