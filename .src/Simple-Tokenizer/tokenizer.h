@@ -8,14 +8,18 @@
 /// @param str Pointer to null-terminated string to tokenize
 /// @param rej Pointer to null-terminated reject string (Characters that terminate a token)
 /// @param max Max tokens to count
+/// @param stl Length of input string in bytes (0 = calculate internally)
 /// @return    Number of tokens found in the string (capped at max)
-size_t st_tkncnt(const char* const __restrict str, const char* const __restrict rej, const size_t max){
+size_t st_tkncnt(const char* const __restrict str, const char* const __restrict rej, const size_t max, size_t stl){
     size_t count = 0;
-    const size_t strl = strlen(str); // Size of string in bytes
-    if(!strl) // Return if empty string
+
+    if(!stl)
+        stl = strlen(str); // Size of string in bytes
+
+    if(!stl) // Return if empty string
         return 0;
 
-    for(size_t stri = 0; count < max && stri < strl; stri += strspn(&str[stri], rej), stri += strcspn(&str[stri], rej) + 1)
+    for(size_t stri = 0; count < max && stri < stl; stri += strspn(&str[stri], rej), stri += strcspn(&str[stri], rej) + 1)
         ++count;
 
     return count;
@@ -27,28 +31,31 @@ size_t st_tkncnt(const char* const __restrict str, const char* const __restrict 
 /// @param tto Output: total tokens generated (NULL = dont save output)
 /// @param rej Pointer to null-terminated reject string (Characters that terminate a token)
 /// @param str Pointer to null-terminated string to tokenize
+/// @param stl Length of input string in bytes (0 = calculate internally)
 /// @return    Pointer to char* buffer, could be NULL because of malloc error
 /// @warning   This function null-terminates tokens by modifying the input string destructively
 /// @warning   If `out` is NULL, this function allocates a token buffer.
 ///            The caller is responsible for freeing it with free().
 /// @note      Returns null if str or rej are NULL
-char** st_tknstr(char** out, const size_t max, size_t* const tto, const char* const __restrict rej, char* const __restrict str){
+char** st_tknstr(char** out, const size_t max, size_t* const tto, const char* const __restrict rej, char* const __restrict str, size_t stl){
     if(!str || !rej) // Return if null pointers
         return NULL;
 
-    const size_t strl = strlen(str); // Size of string in bytes
-    if(!strl) // Return if empty string
+    if(!stl)
+        stl = strlen(str); // Calculate string length if zero
+
+    if(!stl) // Return if empty string
         return NULL;
 
     if(out == NULL){ // Allocate new buffer
-        size_t size = st_tkncnt(str, rej, max);
+        size_t size = st_tkncnt(str, rej, max, stl);
         out = malloc(size * sizeof(char*));
         if(!out) // Return if malloc error
             return NULL;
     }
 
     size_t tt = 0; // Total tokens
-    for(size_t stri = 0; tt < max && stri < strl; stri += strspn(&str[stri], rej)){
+    for(size_t stri = 0; tt < max && stri < stl; stri += strspn(&str[stri], rej)){
         const size_t len = strcspn(&str[stri], rej);
         str[stri + len] = '\0';
         out[tt++] = &str[stri];

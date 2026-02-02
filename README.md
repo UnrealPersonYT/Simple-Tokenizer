@@ -40,7 +40,8 @@ int main(void){
         100,                     // max: maximum tokens to extract
         &token_count,            // tto: output token count
         ";",                     // rej: reject string (delimiters)
-        str                      // str: input string
+        str,                     // str: input string
+        sizeof(str)              // stl: size of string (0 = compute internally)
     );
     
     // Print tokens
@@ -52,7 +53,7 @@ int main(void){
 }
 ```
 
-#### Tokenization Function
+#### Tokenization Function & Utilities
 
 </div>
 
@@ -62,7 +63,14 @@ char** st_tknstr(
     const size_t max,           // Max tokens to generate
     size_t* const tto,          // Output: total tokens generated (NULL = dont save output)
     const char* const rej,      // Pointer to null-terminated reject string (Characters that terminate a token)
-    char* const __restrict str  // Pointer to null-terminated string to tokenize
+    char* const __restrict str, // Pointer to null-terminated string to tokenize
+    size_t stl                  // Length of input string in bytes (0 = calculate internally)
+);
+size_t st_tkncnt(
+    const char* const __restrict str, // Pointer to null-terminated string to tokenize
+    const char* const __restrict rej, // Pointer to null-terminated reject string (Characters that terminate a token)
+    const size_t max,                 // Max tokens to count
+    size_t stl                        // Length of input string in bytes (0 = calculate internally)
 );
 ```
 
@@ -77,6 +85,7 @@ char** st_tknstr(
 - `tto`: Pointer to store the total number of tokens generated. Can be `NULL` if count is not needed.
 - `rej`: Pointer to null-terminated string containing delimiter characters (e.g., `";"`, `" \t\n"`).
 - `str`: Pointer to null-terminated string to tokenize (will be modified destructively).
+- `stl`: Length of input string in bytse. Can be `0` to compute internaly; 
 
 <div align="center">
 
@@ -99,7 +108,7 @@ char** st_tknstr(
 .src/
 ├── Simple-Tokenizer/
 │   ├── inc.h           # Main include file (includes entire library)
-│   ├── tokenizer.h     # Tokenization function implementation
+│   ├── tokenizer.h     # Tokenization function implementation & utilities
 │   ├── string.h        # String functions (uses stdlib by default, customizable)
 │   └── malloc.h        # Memory allocation (uses stdlib by default, customizable)
 └── benchmark.c         # Performance benchmark utility

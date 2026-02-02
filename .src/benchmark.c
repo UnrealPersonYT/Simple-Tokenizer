@@ -12,7 +12,8 @@ static double now_sec(void){
 // Generate random string with variable token length, null-terminated
 static char* make_random_buffer(size_t total_bytes, size_t* out_len){
     char* buf = malloc(total_bytes + 1);
-    if(!buf) return NULL;
+    if(!buf)
+        return NULL;
     
     srand(12345); // Fixed seed for reproducibility
     size_t pos = 0;
@@ -20,7 +21,8 @@ static char* make_random_buffer(size_t total_bytes, size_t* out_len){
     while(pos < total_bytes){
         // Random token length (1-20 chars)
         size_t token_len = 1 + (rand() % 20);
-        if(pos + token_len > total_bytes) token_len = total_bytes - pos;
+        if(pos + token_len > total_bytes)
+            token_len = total_bytes - pos;
         
         // Fill with random chars (avoid null and semicolon)
         for(size_t i = 0; i < token_len && pos < total_bytes; i++){
@@ -29,9 +31,8 @@ static char* make_random_buffer(size_t total_bytes, size_t* out_len){
         }
         
         // Add separator if room
-        if(pos < total_bytes){
+        if(pos < total_bytes)
             buf[pos++] = ';';
-        }
     }
     
     buf[pos] = '\0';
@@ -56,7 +57,7 @@ int main(void){
     }
     
     // Count actual tokens in randomized buffer
-    size_t actual_tokens = st_tkncnt(buf, ";", SIZE_MAX);
+    size_t actual_tokens = st_tkncnt(buf, ";", SIZE_MAX, buflen);
     
     printf("Actual buffer length: %zu bytes\n", buflen);
     printf("Actual token count: %zu\n\n", actual_tokens);
@@ -77,26 +78,9 @@ int main(void){
     memcpy(buf_copy, buf, buflen + 1);
     
     size_t tno = 0;
+    char** buf_out = malloc(actual_tokens * sizeof(char*));
     double tok_t0 = now_sec();
-    
-    // Manual tokenization loop (copied from tokenizer)
-    size_t stri = 0;
-    tno = 0;
-    while(tno < actual_tokens && stri < buflen){
-        // Skip separators
-        while(stri < buflen && buf_copy[stri] == ';')stri++;
-        if(stri >= buflen)break;
-        
-        // Find end of token
-        size_t start = stri;
-        while(stri < buflen && buf_copy[stri] != ';')stri++;
-        
-        // Null-terminate token
-        buf_copy[stri] = '\0';
-        out[tno++] = &buf_copy[start];
-        stri++;
-    }
-    
+    st_tknstr(buf_out, actual_tokens, &tno, ";", buf_copy, buflen);
     double tok_t1 = now_sec();
     double tok_time = tok_t1 - tok_t0;
     
@@ -107,6 +91,7 @@ int main(void){
     printf("Tokens parsed: %zu\n", tno);
     printf("Throughput: %.2f MB/s\n", mbps);
     printf("Token rate: %.2f million tokens/sec\n\n", mtok);
+    free(buf_out);
     
     // ===== PHASE 3: Full operation (allocation + tokenization) =====
     printf("--- PHASE 3: Full Operation (Allocation + Tokenization) ---\n");
@@ -115,7 +100,7 @@ int main(void){
     memcpy(buf_copy2, buf, buflen + 1);
     
     double full_t0 = now_sec();
-    char** out2 = st_tknstr(NULL, actual_tokens, &tno, ";", buf_copy2);
+    char** out2 = st_tknstr(NULL, actual_tokens, &tno, ";", buf_copy2, buflen);
     double full_t1 = now_sec();
     double full_time = full_t1 - full_t0;
     
